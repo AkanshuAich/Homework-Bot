@@ -13,6 +13,7 @@ import os
 import pprint
 import google.generativeai as palm
 
+
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -34,12 +35,15 @@ def get_text_chunks(text):
 
 
 def get_vectorstore(text_chunks):
+    load_dotenv()
     # openai_api_key = os.getenv("OPENAI_API_KEY")
     # if not openai_api_key:
     #     raise ValueError("OpenAI API key not found in environment variables")
-    palm.configure(api_key='AIzaSyC6JJlVXEvgpkL_KWJFZcRURdBTNRiquNM')
+    google_api_key = os.getenv('GOOGLE_API_KEY')
+    palm.configure(api_key=google_api_key)
+
     # Initialize embeddings with the API key
-    embeddings = GooglePalmEmbeddings(google_api_key='AIzaSyC6JJlVXEvgpkL_KWJFZcRURdBTNRiquNM')
+    embeddings = GooglePalmEmbeddings(google_api_key=google_api_key)
     # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
@@ -47,7 +51,9 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vectorstore):
     #llm = ChatOpenAI()
-    llm = HuggingFaceHub(repo_id="tiiuae/falcon-7b-instruct",huggingfacehub_api_token="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", model_kwargs={"temperature":0.5, "max_length":512})
+    load_dotenv()
+    huggingfacehub_api_token = os.getenv("HUGGING_FACE_KEY")
+    llm = HuggingFaceHub(repo_id="tiiuae/falcon-7b-instruct",huggingfacehub_api_token=huggingfacehub_api_token, model_kwargs={"temperature":0.5, "max_length":512})
     llm.client.api_url = 'https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct'
 
     memory = ConversationBufferMemory(
