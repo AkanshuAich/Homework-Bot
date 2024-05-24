@@ -8,6 +8,7 @@ altair==4
 tiktoken==0.4.0
 # uncomment to use huggingface llms
 huggingface-hub==0.14.1
+google.generativeai
 
 # uncomment to use instructor embeddings
 # InstructorEmbedding==1.0.1
